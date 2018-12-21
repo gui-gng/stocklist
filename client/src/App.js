@@ -7,6 +7,9 @@ class App extends Component {
     data: [],
     id: 0,
     message: null,
+    base: null,
+    date: null,
+    rates: [],
     intervalIsSet: false,
     idToDelete: null,
     idToUpdate: null,
@@ -122,6 +125,8 @@ class App extends Component {
             placeholder="add something in the database"
             style={{ width: "200px" }}
           />
+
+
           <button onClick={() => this.putDataToDB(this.state.message)}>
             ADD
           </button>

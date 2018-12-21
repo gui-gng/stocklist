@@ -1,0 +1,170 @@
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </head>
+  
+  <body>
+
+        <div id="test">
+            </div>
+
+
+    <script>
+        var response =
+        {
+    "bestMatches": [
+        {
+            "1. symbol": "YI",
+            "2. name": "111 Inc.",
+            "3. type": "Equity",
+            "4. region": "United States",
+            "5. marketOpen": "09:30",
+            "6. marketClose": "16:00",
+            "7. timezone": "UTC-05",
+            "8. currency": "USD",
+            "9. matchScore": "0.2500"
+        },
+        {
+            "1. symbol": "1119.HKG",
+            "2. name": "iDreamSky Technology Holdings Limited",
+            "3. type": "Equity",
+            "4. region": "Hong Kong",
+            "5. marketOpen": "09:30",
+            "6. marketClose": "16:00",
+            "7. timezone": "UTC+08",
+            "8. currency": "HKD",
+            "9. matchScore": "0.2500"
+        },
+        {
+            "1. symbol": "1675.HKG",
+            "2. name": "Asiainfo Technologies Limited",
+            "3. type": "Equity",
+            "4. region": "Hong Kong",
+            "5. marketOpen": "09:30",
+            "6. marketClose": "16:00",
+            "7. timezone": "UTC+08",
+            "8. currency": "HKD",
+            "9. matchScore": "0.2500"
+        },
+        {
+            "1. symbol": "1761.HKG",
+            "2. name": "BabyTree Group",
+            "3. type": "Equity",
+            "4. region": "Hong Kong",
+            "5. marketOpen": "09:30",
+            "6. marketClose": "16:00",
+            "7. timezone": "UTC+08",
+            "8. currency": "HKD",
+            "9. matchScore": "0.2500"
+        },
+        {
+            "1. symbol": "1762.HKG",
+            "2. name": "Wanka Online Inc.",
+            "3. type": "Equity",
+            "4. region": "Hong Kong",
+            "5. marketOpen": "09:30",
+            "6. marketClose": "16:00",
+            "7. timezone": "UTC+08",
+            "8. currency": "HKD",
+            "9. matchScore": "0.2500"
+        },
+        {
+            "1. symbol": "1790.HKG",
+            "2. name": "TIL Enviro Limited",
+            "3. type": "Equity",
+            "4. region": "Hong Kong",
+            "5. marketOpen": "09:30",
+            "6. marketClose": "16:00",
+            "7. timezone": "UTC+08",
+            "8. currency": "HKD",
+            "9. matchScore": "0.2500"
+        },
+        {
+            "1. symbol": "1837.HKG",
+            "2. name": "Natural Food International Holding Limited",
+            "3. type": "Equity",
+            "4. region": "Hong Kong",
+            "5. marketOpen": "09:30",
+            "6. marketClose": "16:00",
+            "7. timezone": "UTC+08",
+            "8. currency": "HKD",
+            "9. matchScore": "0.2500"
+        },
+        {
+            "1. symbol": "1845.HKG",
+            "2. name": "Weigang Envi Tech Hldg Grp",
+            "3. type": "Equity",
+            "4. region": "Hong Kong",
+            "5. marketOpen": "09:30",
+            "6. marketClose": "16:00",
+            "7. timezone": "UTC+08",
+            "8. currency": "HKD",
+            "9. matchScore": "0.2500"
+        },
+        {
+            "1. symbol": "1860.HKG",
+            "2. name": "Mobvista Inc.",
+            "3. type": "Equity",
+            "4. region": "Hong Kong",
+            "5. marketOpen": "09:30",
+            "6. marketClose": "16:00",
+            "7. timezone": "UTC+08",
+            "8. currency": "HKD",
+            "9. matchScore": "0.2500"
+        },
+        {
+            "1. symbol": "1877.HKG",
+            "2. name": "Shanghai Junshi Biosciences Co. Ltd.",
+            "3. type": "Equity",
+            "4. region": "Hong Kong",
+            "5. marketOpen": "09:30",
+            "6. marketClose": "16:00",
+            "7. timezone": "UTC+08",
+            "8. currency": "HKD",
+            "9. matchScore": "0.2000"
+        }
+    ]
+};
+        
+    
+
+        var date = new Date("2017-12-14");
+        
+            
+
+            var stock = {
+                "symbol": "",
+                "name": "",
+                "type": "",
+                "region": "",
+                "marketOpen": "",
+                "marketClose": "",
+                "timezone": "",
+                "currency": "",
+                "data": ""};
+
+            var stockValue = {
+                "Date": "",
+                "open": "",
+                "high": "",
+                "low": "",
+                "close": "",
+                "volume": ""};
+
+            var stockRes = response.bestMatches;
+            $("#test").append(JSON.stringify(stockRes.length)+ "</br>");
+            for(var i=0; i < stockRes.length;i++){
+                stock.symbol =  stockRes[i]["1. symbol"];
+                stock.name =    stockRes[i]["2. name"];
+                stock.type =    stockRes[i]["3. type"];
+                stock.region =  stockRes[i]["4. region"];
+                stock.marketOpen = stockRes[i]["5. marketOpen"];
+                stock.marketClose = stockRes[i]["6. marketClose"];
+                stock.timezone = stockRes[i]["7. timezone"];
+                stock.currency = stockRes[i]["8. currency"];
+                stock.data = [];
+                $("#test").append(JSON.stringify(stock)+ "</br>");
+            }
+         
+    </script>
+
+  </body>
