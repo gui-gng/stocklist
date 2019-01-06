@@ -14,7 +14,8 @@ const app = express();
 const router = express.Router();
 
 // this is our MongoDB database
-const dbRoute = "mongodb://guigng:1Metallica@ds247759.mlab.com:47759/currency";
+//const dbRoute = "mongodb://guigng:1Metallica@ds247759.mlab.com:47759/currency";
+const dbRoute = "mongodb://localhost:27017/currency";
 
 // connects our back end code with the database
 mongoose.connect(
@@ -44,6 +45,26 @@ router.get("/getData", (req, res) => {
   });
 });
 
+router.get("/getStocks", (req, res) => {
+  Stocks.find(req.body, (err, data) => {
+    if (err) return res.json({ success: false, error: err });
+    return res.json({ success: true, data: data });
+  });
+});
+
+router.post("/getStocks", (req, res) => {
+  Stocks.find(req.body, (err, data) => {
+    //console.log(data);
+    if (err) {
+      return res.json({ success: false, error: err });
+    } else {
+      return res.json({ success: true, data: data });
+    }
+  });
+});
+
+
+
 // this is our update method
 // this method overwrites existing data in our database
 router.post("/updateData", (req, res) => {
@@ -53,14 +74,15 @@ router.post("/updateData", (req, res) => {
     return res.json({ success: true });
   });
 });
+var arraySymbols = [];
 
-async function  executeChucksStocks(urlArray){
-  
+function  executeChucksStocks(position){
+  var urlArray = arraySymbols[position];
   var dateNow = Date.now();
-  console.log(dateNow + ": Executing: " + urlArray[0] + " to " + urlArray[urlArray.length-1]);
+  //console.log(dateNow + ": Executing: " + urlArray[0] + " to " + urlArray[urlArray.length-1]);
   let promiseArray = urlArray.map(url => axios.get(url)); // or whatever
 
-    return await axios.all(promiseArray)
+  axios.all(promiseArray)
     .then(function(results) {
       results.forEach(function(response) {
         stockRes = response.data.bestMatches;
@@ -72,7 +94,7 @@ async function  executeChucksStocks(urlArray){
           "close": "0",
           "volume": "0"};
         if(stockRes){
-
+          
           for(var i=0; i < stockRes.length;i++){
             let stock = new Stocks();
             stock.symbol =  stockRes[i]["1. symbol"];
@@ -89,11 +111,106 @@ async function  executeChucksStocks(urlArray){
               if (err) 
               console.log(err);
             });
+            /*
+            axios.post("/api/updateStock", {
+              symbol: stock.symbol
+            });
+            */
           }
+         
         }
       });
+    }).catch(function (error) {
+      console.log("error");
+    }).then(function(){
+      console.log("Starting array: " + position);
+      return  setTimeout(executeChucksStocks, 10000, position+1);
+      ;
     });
 }
+
+
+router.get("/updateAllStock", (req, res) => {
+  var listSymbol = "<table><tr><th>Symbol</th><th>CountData</th><th>Checked</th></tr>";
+  Stocks.find({}, function(err, stocks){
+    stocks.forEach(function(stock) {
+      console.log(stock.symbol);
+      listSymbol =  listSymbol.concat(
+        "<tr><td>" + stock.symbol + "</td>"  +
+        "<td>" + stock.data.length + "</td>"  +
+        "<td>" + stock.type + "</td>"  +
+        "</tr>");
+        //axios.post("http://localhost:3001/api/updateStock", {symbol: stock.symbol});
+    });
+
+    listSymbol =  listSymbol.concat("</table>");
+    res.send(listSymbol);
+  });
+
+  
+});
+
+router.post("/updateStock", (req, res) => {
+  var stockUpdate = req.body;
+  var symbolSearch = stockUpdate.symbol;
+  let stock = {};
+  Stocks.findOne(stockUpdate, function (err, stockRes) {
+    if(err){
+      console.log(err);
+    }
+    stock = stockRes;
+    axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + symbolSearch + "&outputsize=full&apikey=X8UIL9S4UQ8HJ7UP")
+    .then(function (response) {
+      var dataList = response.data["Time Series (Daily)"];
+      for (var date in dataList) {
+        
+        var stockValue = {
+          "Date": date,
+          "open": dataList[date]["1. open"],
+          "high": dataList[date]["2. high"],
+          "low": dataList[date]["3. low"],
+          "close": dataList[date]["4. close"],
+          "volume": dataList[date]["5. volume"]
+        };
+        console.log(date);
+        stock.data.push(stockValue);
+      }
+      //console.log(stock);
+      Stocks.findOneAndUpdate(stockUpdate, stock, err => {
+        if (err) return res.json({ success: false, error: err });
+        return res.json({ success: true });
+      });
+    }).catch(function (error) {
+      console.log(error);
+    });
+   
+  });
+
+});
+
+
+router.get("/updateNews", (req, res) => {
+  /*
+  Add websites to search for news
+    -Forbes 
+    -The NYT
+    -Guardian
+    -Search some similar tool
+
+  */
+});
+
+router.get("/Combinestocksnews", (req, res) => {
+  /*
+  Add websites to search for news
+    -Forbes 
+    -The NYT
+    -Guardian
+    -Search some similar tool
+  */
+ 
+});
+
 
 router.get("/updateStocks", (req, res) => {
 
@@ -101,18 +218,23 @@ router.get("/updateStocks", (req, res) => {
   axios.get("https://www.marketindex.com.au/asx-listed-companies")
   .then(function (response) {
     $ = cheerio.load(response.data);
- 
     cheerioTableparser($);
     var data = $("#asx_sp_table").parsetable(true, true, true);
-    //console.log(data[2]);
     var symbolListRes = data[2];
-    //console.log("sizeList: " + symbolListRes[name].length);
     if(symbolListRes){
-      let urlArray = [] // unknown # of urls (1 or more)
+      
       for (var name in symbolListRes) {
-        if (symbolListRes.hasOwnProperty(name)) { 
-          console.log(symbolListRes[name].split(".")[0]);
-          urlArray.push("https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=" + symbolListRes[name].split(".")[0] + "&apikey=X8UIL9S4UQ8HJ7UP")
+        var symbolNameFormated = symbolListRes[name].split(".")[0];
+        if (symbolListRes.hasOwnProperty(name) && !symbolList.hasOwnProperty(symbolNameFormated)) { 
+          symbolList.push(symbolNameFormated);
+        }
+      }
+
+      let urlArray = [] // unknown # of urls (1 or more)
+      for (var name in symbolList) {
+        if (symbolList.hasOwnProperty(name)) { 
+          //console.log(symbolList[name]);
+          urlArray.push("https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=" + symbolList[name] + "&apikey=X8UIL9S4UQ8HJ7UP")
         }
       }
 
@@ -120,11 +242,14 @@ router.get("/updateStocks", (req, res) => {
       var stock;
       var stockList = [];
       var urlArrayChucks = [];
+
+
       var i,j,temparray,chunk = 10;
       for (i=0,j=urlArray.length; i<j; i+=chunk) {
         temparray = urlArray.slice(i,i+chunk);
-        executeChucksStocks(temparray);
-      } 
+        arraySymbols.push(temparray);
+      }
+      executeChucksStocks(0);
     }
 })
 .catch(function (error) {
