@@ -1,0 +1,34 @@
+.searchForm {
+    width: 500px !important;
+}
+.listSearchStocks_item {
+    width: 500px !important;
+}
+.listSearchStocks {
+    margin-top: 30px;
+    position: fixed;
+}
+
+.removeLinkDefault {
+    text-decoration: none !important;
+}
+
+.listSearchStocks_item_link{
+    color: #505050;
+    background: #FFF;
+    text-decoration: none !important;
+}
+.listSearchStocks_item_link:hover{
+    color: #000000;
+    background-color: #DDD;
+    text-decoration: none !important;
+}
+
+.brandLink{
+    color: #000000;
+    text-decoration: none !important;
+}
+.brandLink:hover{
+    color: #505050;
+    text-decoration: none !important;
+}
